@@ -9,33 +9,32 @@ import os
 
 @pytest.fixture
 def driver():
-    service = Service("E:\geckodriver-v0.37.0-win64\geckodriver.exe")
+    service = Service("E:\\geckodriver-v0.37.0-win64\\geckodriver.exe")
     options = Options()
     driver = webdriver.Firefox(service=service, options=options)
-    # driver = webdriver.Firefox()
-    # driver.maximize_window()
-    driver.set_window_size(640, 460)
-    # driver = webdriver.Firefox(service=service)
-    # driver = webdriver.Firefox(options=options)
+    driver.maximize_window()
     yield driver
     driver.quit()
 
-def test_about_page(driver):
-    driver.get("https://itcareerhub.de/ru")
-    sleep(3)
-    about_link = driver.find_element(By.LINK_TEXT, "О нас")
-    about_link.click()
-    sleep(3)
 
-def test_berlin(driver):
+def test_payment_section_screenshot(driver):
     driver.get("https://itcareerhub.de/ru")
-    driver.refresh()
-    driver.get("https://www.berlin.de")
-    driver.save_screenshot("./berlin_s.png")
+    sleep(3)
+    try:
+        cookie_button = driver.find_element(By.XPATH, "//button[contains(text(), 'Подтвердить')]")
+        cookie_button.click()
+        sleep(1)
+    except Exception:
+        pass
+
+    payment_link = driver.find_element(By.LINK_TEXT, "Способы оплаты")
+    payment_link.click()
     sleep(2)
-    driver.refresh()
-    driver.back()
+
+    section = driver.find_element(By.ID, "rec1921734713")
+    driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", section)
     sleep(2)
-    driver.forward()
-    driver.refresh()
-    sleep(2)
+
+    os.makedirs("screenshots", exist_ok=True)
+    section.screenshot("screenshots/payment_section.png")
+    sleep(1)
