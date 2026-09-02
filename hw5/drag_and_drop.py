@@ -42,20 +42,15 @@ function matchIn(elements, texts) {
 }
 
 function searchRoot(root, texts) {
-    // Сначала ищем среди настоящих интерактивных элементов (кнопки/ссылки) —
-    // это исключает случайные попадания на div/span-обёртки с тем же текстом,
-    // клик по которым может привести не к нажатию кнопки, а к выделению текста.
     let found = matchIn(
         root.querySelectorAll('button, a, [role="button"], input[type="button"], input[type="submit"]'),
         texts
     );
     if (found) return found;
 
-    // Резерв: div/span, если сайт не использует семантические кнопки
     found = matchIn(root.querySelectorAll('span, div, label'), texts);
     if (found) return found;
 
-    // Рекурсивно спускаемся в shadow roots
     const all = root.querySelectorAll('*');
     for (const el of all) {
         if (el.shadowRoot) {
@@ -101,7 +96,6 @@ def close_cookie_banner(driver, timeout=COOKIE_WAIT_TIMEOUT):
             except Exception:
                 pass
 
-        # 2) пробуем во всех iframe на странице (кроме demo-frame с галереей)
         driver.switch_to.default_content()
         iframes = driver.find_elements(By.TAG_NAME, "iframe")
         for iframe in iframes:
